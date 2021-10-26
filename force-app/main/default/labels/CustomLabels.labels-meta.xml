@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>AttemptsError</fullName>
+        <categories>OTP Validation</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AttemptsError</shortDescription>
+        <value>Too many attempts - please request a new one time passcode</value>
+    </labels>
+    <labels>
+        <fullName>ExpiredError</fullName>
+        <categories>OTP validation</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ExpiredError</shortDescription>
+        <value>Expired - please request a new one time passcode</value>
+    </labels>
+    <labels>
+        <fullName>MaxNumberOfSendsError</fullName>
+        <categories>OTP Resend Validation</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>MaxNumberOfSendsError</shortDescription>
+        <value>Maximum number of one time passcode sends reached - Please wait until your cooldown has expired</value>
+    </labels>
+    <labels>
+        <fullName>OTPGenerationCooldownError</fullName>
+        <categories>OTP Resend Validation</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>OTPGenerationCooldownError</shortDescription>
+        <value>Cooldown period still in active - please wait until the cooldown period has ended</value>
+    </labels>
+    <labels>
+        <fullName>OneTimePasscodeError</fullName>
+        <categories>OTP Validation</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>OneTimePasscodeError</shortDescription>
+        <value>Incorrect OTP - try again</value>
+    </labels>
+    <labels>
+        <fullName>PrevValidatedError</fullName>
+        <categories>OTP Validation</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>PrevValidatedError</shortDescription>
+        <value>Already validated - please request a new one time passcode</value>
+    </labels>
+    <labels>
+        <fullName>TimeElapsedError</fullName>
+        <categories>OTP Validation</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>TimeElapsedError</shortDescription>
+        <value>No longer valid - time elapsed, please request a new one time passcode</value>
+    </labels>
+</CustomLabels>
