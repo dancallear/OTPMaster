@@ -30,6 +30,7 @@ public with sharing class OTPHelper {
     *
     * Returns - Custom Metadata record
     */
+    @AuraEnabled
     public static One_Time_Passcode_Setting__mdt getOTPSettings(String label) {
         One_Time_Passcode_Setting__mdt otpSettings;
 
@@ -43,7 +44,7 @@ public with sharing class OTPHelper {
                                 TypeOfCode__c,
                                 ValidFor__c
                             FROM One_Time_Passcode_Setting__mdt 
-                            WHERE MasterLabel = :label];
+                            WHERE DeveloperName = :label];
         }
         catch (Exception e){
             System.debug(e);
@@ -114,6 +115,7 @@ public with sharing class OTPHelper {
 
     //Single method for GUID generation
     //Return - String GUID
+    @AuraEnabled
     public static String generateGUID(){
         Blob b = Crypto.GenerateAESKey(128);
         String h = EncodingUtil.ConvertTohex(b);
@@ -125,9 +127,17 @@ public with sharing class OTPHelper {
     //Helper method for OTP generation
     //Return - String OTP
     public static String getRandom(String type, Decimal otpLength){
+        System.debug('Type >> ' + type );
+        System.debug('otpLength >> ' + otpLength );
+        
         OTPUtils utils = new OTPUtils();
         String utilString;
-        String otp;
+        String otp = '';
+
+        System.debug('utils ' + utils);
+        System.debug('utils.alpha ' + utils.alpha);
+        System.debug('utils.numeric ' + utils.numeric);
+        System.debug('utils.alphanumeric ' + utils.alphanumeric);
 
         Switch on type{
             when 'Alpha'{
@@ -140,19 +150,20 @@ public with sharing class OTPHelper {
                 utilString = utils.alphanumeric;
             }
         }
-
-        for(Integer i; i <= otpLength; i++){
-            otp = otp + (utilString.charAt(Integer.valueOf(Math.floor(Math.random() * utilString.length()))));
-        }
-
+        System.debug(utilString);
+        while (otp.length() < otpLength) {
+            Integer idx = Math.mod(Math.abs(Crypto.getRandomInteger()), utilString.length());
+            otp += utilString.substring(idx, idx+1);
+         }
+        System.debug('otp ' + otp);
         return otp;
     }
 
     //Checks OTP is valid
     //Return - V Return: Validation:True||False, Errors:List<String>Errors
     public static ValidationResponse validationChecks(String otp, One_Time_Passcode__c  otpRecord, one_Time_Passcode_Setting__mdt otpSettings){
-        List<String> validationErrors;
-        Integer validationErrorCount;
+        List<String> validationErrors = new List<String>();
+        Integer validationErrorCount = 0;
         ValidationResponse validationResponse = new ValidationResponse();
 
         OTPUtils utils = new OTPUtils();
@@ -205,15 +216,15 @@ public with sharing class OTPHelper {
     //Checks OTP can be resent
     //Return - V Return: Validation:True||False, Errors:List<String>Errors
     public static ValidationResponse validateResendOTP(List<String> prevGUIDs, String userId, One_Time_Passcode_Setting__mdt otpSettings){
-        List<String> validationErrors;
-        Integer validationErrorCount;
+        List<String> validationErrors = new List<String>();
+        Integer validationErrorCount = 0;
         ValidationResponse validationResponse = new ValidationResponse();
 
         OTPUtils utils = new OTPUtils();
 
         List<One_Time_Passcode__c> cleanUpOldOTPRecords = new List<One_Time_Passcode__c>();
         List<One_Time_Passcode__c> otpRecords;
-        
+
         try{
             otpRecords = [SELECT 
                                 GUID__c, 
@@ -238,6 +249,9 @@ public with sharing class OTPHelper {
             validationErrorCount =+ 1;
             validationErrors.add(utils.OTPGenerationCooldownError);
         }
+
+        System.debug('validationErrorCount > ' + validationErrorCount);
+        System.debug('validationErrors > ' + validationErrors);
         
         if(validationErrorCount == 0){
             validationResponse.validation = true;
