@@ -1,4 +1,16 @@
 <template>
-    <o-t-p-initial></o-t-p-initial> 
-    <o-t-p-verify></o-t-p-verify> 
+    <lightning-card>
+        <div>
+            <p>We require to to identify your self via Onetime Passcode.</p>
+            
+            <template if:true={showSendLWC}>
+                <c-o-t-p-send></c-o-t-p-send>
+            </template>
+            <template if:true={showVerifyLWC}>
+                <c-o-t-p-verify current-g-u-i-d={currentGUID}></c-o-t-p-verify>
+            </template>
+            
+        </div>
+    </lightning-card>
+   
 </template>
