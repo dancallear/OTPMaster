@@ -8,8 +8,16 @@ public with sharing class OTPController {
 
     Return - Void
     */
+    @AuraEnabled
     public static void generateOTP(String guid, String userId, One_Time_Passcode_Setting__mdt otpSettings, String sendTo){
         String otp;
+
+        System.debug('guid' + ' >>' + guid );
+        System.debug('userId' + ' >>' + userId );
+        System.debug('otpSettings' + ' >>' + otpSettings );
+        System.debug('sendTo' + ' >>' + sendTo );
+        System.debug('otpSettings.TypeOfCode__c' + ' >>' + otpSettings.TypeOfCode__c );
+        System.debug('otpSettings.OTPLength__c' + ' >>' + otpSettings.OTPLength__c );
 
         Switch on otpSettings.TypeOfCode__c {
             when 'Alpha'{
@@ -22,6 +30,8 @@ public with sharing class OTPController {
                 otp = OTPHelper.getRandom(otpSettings.TypeOfCode__c, otpSettings.OTPLength__c);
             }
         }
+
+        System.debug('otp' + ' >>' + otp );
 
         if(sendTo == null){
             OTPHelper.createOTPRecord(otp, guid, userId);
@@ -38,7 +48,8 @@ public with sharing class OTPController {
 
     Return: Validation:True||False, Errors:List<String>Errors
     */
-    public static OTPHelper.ValidationResponse validateOTP(String otp, String guid, String userId, One_Time_Passcode_Setting__mdt otpSettings){
+    @AuraEnabled
+    public static String validateOTP(String otp, String guid, String userId, One_Time_Passcode_Setting__mdt otpSettings){
         One_Time_Passcode__c otpRecord;
         OTPHelper.ValidationResponse validationResponse;
         try{
@@ -48,7 +59,8 @@ public with sharing class OTPController {
                                 User__c,
                                 IsValidated__c,
                                 IsExpired__c,
-                                AttemptsMade__c
+                                AttemptsMade__c,
+                                validTo__c
                         FROM One_Time_Passcode__c
                         WHERE GUID__c = :guid
                         AND User__c = :userId
@@ -60,10 +72,17 @@ public with sharing class OTPController {
             //Here log to error logging framework
             throw new OTPControllerException('Error retrieveing OTP for this user or session. See logs for details.');
         }
+
+        System.debug('otprecord >> ' + otpRecord);
+
+        System.debug('otp >> ' + otp);
+        System.debug('otpSettings >> ' + otpSettings);
         
         validationResponse = OTPHelper.validationChecks(otp, otpRecord, otpSettings);
 
-        return validationResponse;
+        System.debug('validationResponse >> ' + validationResponse);
+
+        return JSON.serialize(validationResponse);
     }
 
     /*
@@ -76,7 +95,8 @@ public with sharing class OTPController {
 
     Return: Validation:True||False, Errors:List<String>Errors, guid:GUID
     */
-    public static OTPHelper.ValidationResponse resendOTP(List<String> prevGUIDs, String userId, One_Time_Passcode_Setting__mdt otpSettings, String sendTo){
+    @AuraEnabled
+    public static String resendOTP(List<String> prevGUIDs, String userId, One_Time_Passcode_Setting__mdt otpSettings, String sendTo){
         
 
         OTPHelper.ValidationResponse validationResponse = OTPHelper.validateResendOTP(prevGUIDs, userId, otpSettings);
@@ -86,7 +106,7 @@ public with sharing class OTPController {
             
             generateOTP(guid, userId, otpSettings, sendTo);
         }
-        return validationResponse;
+        return JSON.serialize(validationResponse);
     }
 
 
@@ -95,8 +115,8 @@ public with sharing class OTPController {
 
     Returns - Void
     */
-    public static void sendOTP(String otp){
-
+    private static void sendOTP(String otp){
+        System.debug('Code sent -- ' + otp);
         //Check send method
 
         //If send to SMS:
