@@ -1,0 +1,9 @@
+<template>
+    <lightning-radio-group name="SendByGroup:"
+                            label="Send by:"
+                            options={options}
+                            value={value}
+                            onchange={onSendByChange}
+                            type="radio"></lightning-radio-group>
+    <lightning-button variant="brand" label="Send Onetime Passcode" title="Send OTP" onclick={onSendOTPButtonClick} class="slds-var-m-left_x-small"></lightning-button>
+</template>
