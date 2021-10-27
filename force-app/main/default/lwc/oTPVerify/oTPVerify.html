@@ -1,3 +1,5 @@
 <template>
-    
+    <lightning-input type="text" label="Enter Your Onetime Passcode" placeholder="Enter Your Onetime Passcode..." onchange={handleInputChange}></lightning-input>
+    <lightning-button variant="brand" label="Verify" title="Verify" onclick={verifyOTP} class="slds-var-m-left_x-small"></lightning-button>
+    <lightning-button variant="brand" label="Request New Onetime Passcode" title="Request New Onetime Passcode" onclick={newOTPButtonClick} class="slds-var-m-left_x-small"></lightning-button>
 </template>
